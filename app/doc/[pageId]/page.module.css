@@ -121,3 +121,21 @@
   font-size: 1.1rem;
 }
 
+.retryButton {
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 12px 30px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 300;
+}
+
+.retryButton:hover {
+  background: var(--accent);
+  color: var(--bg-primary);
+}
+

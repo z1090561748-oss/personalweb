@@ -31,7 +31,11 @@ export default function DocPage() {
       const result = await response.json()
 
       if (!response.ok) {
-        setError(result.error || '获取内容失败')
+        let errorMsg = result.error || '获取内容失败'
+        if (result.code === 'ECONNRESET') {
+          errorMsg = '网络连接失败。请检查网络或使用 VPN 后重试。'
+        }
+        setError(errorMsg)
         setLoading(false)
         return
       }
@@ -61,6 +65,9 @@ export default function DocPage() {
         <div className={styles.errorCard}>
           <h2>加载失败</h2>
           <p>{error}</p>
+          <button onClick={fetchNotionContent} className={styles.retryButton}>
+            重试
+          </button>
         </div>
       </div>
     )
