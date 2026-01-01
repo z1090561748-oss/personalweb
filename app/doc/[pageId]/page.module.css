@@ -1,0 +1,123 @@
+.container {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  padding: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.header {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 60px 40px 40px;
+  position: relative;
+}
+
+.backButton {
+  display: none; /* 隐藏返回按钮，因为是固定页面 */
+}
+
+.title {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 300;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 20px;
+}
+
+.content {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: transparent;
+  padding: 0 40px 120px;
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 40px 20px 30px;
+  }
+  
+  .content {
+    padding: 0 20px 80px;
+  }
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  color: var(--text-primary);
+  position: relative;
+  z-index: 1;
+}
+
+.spinner {
+  width: 60px;
+  height: 60px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.spinner::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border: 2px solid transparent;
+  border-top-color: var(--accent-secondary);
+  border-radius: 50%;
+  animation: spin 1.5s linear infinite reverse;
+  opacity: 0.5;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.errorCard {
+  max-width: 600px;
+  margin: 100px auto;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  padding: 60px 40px;
+  border-radius: 0;
+  text-align: center;
+  border: 1px solid var(--border);
+  position: relative;
+  z-index: 1;
+}
+
+.errorCard h2 {
+  color: var(--accent-secondary);
+  margin-bottom: 20px;
+  font-weight: 300;
+  font-size: 2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.errorCard p {
+  color: var(--text-secondary);
+  margin-bottom: 30px;
+  font-size: 1.1rem;
+}
+
