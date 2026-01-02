@@ -62,7 +62,7 @@ export async function GET(request: NextRequest) {
             title,
             description: config.description || '',
             url: `/doc/${config.id}`,
-            lastEdited: page.last_edited_time,
+            lastEdited: (page as any).last_edited_time || null,
           }
         } catch (error: any) {
           console.error(`获取页面 ${config.id} 失败:`, error)

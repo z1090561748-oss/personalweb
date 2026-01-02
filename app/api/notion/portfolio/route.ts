@@ -51,8 +51,8 @@ export async function GET(request: NextRequest) {
         const proxyUrl = httpsProxy || httpProxy
         notionConfig.agent = new HttpsProxyAgent(proxyUrl)
         console.log('使用代理:', proxyUrl)
-      } catch (proxyError) {
-        console.error('代理配置失败:', proxyError.message)
+      } catch (proxyError: any) {
+        console.error('代理配置失败:', proxyError?.message || proxyError)
       }
     } else {
       console.log('未配置代理，直接连接 Notion API')
