@@ -3,7 +3,11 @@
   background: var(--bg-primary);
   padding: 0;
   position: relative;
-  z-index: 1;;`n  width: 100%;`n  max-width: 100vw;`n  overflow-x: hidden;`n  margin: 0;
+  z-index: 1;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  margin: 0;
 }
 
 .header {
