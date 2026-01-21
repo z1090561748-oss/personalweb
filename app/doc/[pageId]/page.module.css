@@ -1,13 +1,9 @@
-﻿.container {
+.container {
   min-height: 100vh;
   background: var(--bg-primary);
   padding: 0;
   position: relative;
   z-index: 1;
-  width: 100%;
-  max-width: 100vw;
-  overflow-x: hidden;
-  margin: 0;
 }
 
 .header {
@@ -18,7 +14,7 @@
 }
 
 .backButton {
-  display: none; /* 闅愯棌杩斿洖鎸夐挳锛屽洜涓烘槸鍥哄畾椤甸潰 */
+  display: none; /* 隐藏返回按钮，因为是固定页面 */
 }
 
 .title {

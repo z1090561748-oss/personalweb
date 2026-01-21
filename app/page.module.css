@@ -1,13 +1,9 @@
-﻿.container {
+.container {
   min-height: 100vh;
   background: var(--bg-primary);
   padding: 0;
   position: relative;
   z-index: 1;
-  width: 100%;
-  max-width: 100vw;
-  overflow-x: hidden;
-  margin: 0;
 }
 
 .content {
@@ -15,7 +11,7 @@
   max-width: 100%;
 }
 
-/* 椤堕儴 Hero 鍖哄煙锛屽弬鑰?kejynwu.com 鐨勫竷灞€鑺傚 */
+/* 顶部 Hero 区域，参考 kejynwu.com 的布局节奏 */
 .hero {
   max-width: 1200px;
   margin: 0 auto 80px;
