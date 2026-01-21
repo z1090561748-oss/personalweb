@@ -8,10 +8,7 @@
   max-width: 100vw;
   overflow-x: hidden;
   margin: 0;
-  width: 100%;
-  max-width: 100vw;
-  overflow-x: hidden;
-  margin: 0;
+  
 }
 
 .content {
@@ -159,10 +156,7 @@
   color: var(--text-primary);
   position: relative;
   z-index: 1;
-  width: 100%;
-  max-width: 100vw;
-  overflow-x: hidden;
-  margin: 0;
+  
 }
 
 .spinner {
