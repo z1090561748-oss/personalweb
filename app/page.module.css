@@ -248,6 +248,6 @@
   }
 
   .workTitle {
-    font-size: clamp(3rem, 8vw, 10rem);
+    font-size: clamp(1rem, 2.67vw, 3.33rem);
   }
 }
