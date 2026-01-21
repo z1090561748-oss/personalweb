@@ -198,7 +198,18 @@ export default function Home() {
             <div className={styles.errorCard}>
               <h2>加载失败</h2>
               <p>{error}</p>
-              <button onClick={fetchPortfolio} className={styles.retryButton}>
+              <button 
+                onClick={() => {
+                  // 创建新的 controller 用于重试
+                  if (portfolioControllerRef.current) {
+                    portfolioControllerRef.current.abort()
+                  }
+                  const controller = new AbortController()
+                  portfolioControllerRef.current = controller
+                  fetchPortfolio(controller.signal)
+                }} 
+                className={styles.retryButton}
+              >
                 重试
               </button>
             </div>

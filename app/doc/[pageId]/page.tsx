@@ -100,7 +100,18 @@ export default function DocPage() {
         <div className={styles.errorCard}>
           <h2>加载失败</h2>
           <p>{error}</p>
-          <button onClick={fetchNotionContent} className={styles.retryButton}>
+          <button 
+            onClick={() => {
+              // 创建新的 controller 用于重试
+              if (controllerRef.current) {
+                controllerRef.current.abort()
+              }
+              const controller = new AbortController()
+              controllerRef.current = controller
+              fetchNotionContent(controller.signal)
+            }} 
+            className={styles.retryButton}
+          >
             重试
           </button>
         </div>
