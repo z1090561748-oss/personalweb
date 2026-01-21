@@ -1,1 +1,149 @@
-﻿
+﻿.container {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  padding: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.header {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 60px 40px 40px;
+  position: relative;
+}
+
+.backButton {
+  display: none; /* 闅愯棌杩斿洖鎸夐挳锛屽洜涓烘槸鍥哄畾椤甸潰 */
+}
+
+.title {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 300;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 20px;
+}
+
+.content {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: transparent;
+  padding: 0 40px 120px;
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 40px 20px 30px;
+  }
+  
+  .content {
+    padding: 0 20px 80px;
+  }
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  color: var(--text-primary);
+  position: relative;
+  z-index: 1;
+}
+
+.spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 30px;
+}
+
+.spinner span {
+  width: 8px;
+  height: 8px;
+  background-color: white;
+  border-radius: 50%;
+  animation: dot-bounce 1.4s ease-in-out infinite;
+}
+
+.spinner span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.spinner span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.spinner span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes dot-bounce {
+  0%, 80%, 100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.errorCard {
+  max-width: 600px;
+  margin: 100px auto;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  padding: 60px 40px;
+  border-radius: 0;
+  text-align: center;
+  border: 1px solid var(--border);
+  position: relative;
+  z-index: 1;
+}
+
+.errorCard h2 {
+  color: var(--accent-secondary);
+  margin-bottom: 20px;
+  font-weight: 300;
+  font-size: 2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.errorCard p {
+  color: var(--text-secondary);
+  margin-bottom: 30px;
+  font-size: 1.1rem;
+}
+
+.retryButton {
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 12px 30px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 300;
+}
+
+.retryButton:hover {
+  background: var(--accent);
+  color: var(--bg-primary);
+}
+
