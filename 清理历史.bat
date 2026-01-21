@@ -10,3 +10,4 @@ echo 清理完成！
 echo 现在可以尝试推送了
 pause
 
+

@@ -176,8 +176,10 @@ export default function NotionRenderer({ blocks }: NotionRendererProps) {
           </a>
         )
 
+      // 数据库块：当前站点不渲染数据库视图，避免在前端出现
+      // “NEW DATABASE / ECONNRESET” 这类网络错误提示
       case 'child_database':
-        return <DatabaseView key={id} databaseId={id} title={value.title} />
+        return null
 
       case 'video':
         const videoUrl = value.type === 'external' 
@@ -356,6 +358,161 @@ export default function NotionRenderer({ blocks }: NotionRendererProps) {
   // 处理列表项分组、表格、列布局
   const processedBlocks = processBlocks(blocks)
 
+  // 检查是否有"参展经历"（或"获奖经历"）和"项目经历"需要并排显示
+  const exhibitionsIndex = processedBlocks.findIndex((item) => {
+    if (item.type === 'block' && item.block) {
+      const block = item.block
+      if (block.type === 'heading_2' || block.type === 'heading_3') {
+        const text = block[block.type]?.rich_text?.map((t: any) => t.plain_text).join('') || ''
+        return text.includes('参展经历') || text.includes('获奖经历') || text.includes('获奖') || text.includes('参展')
+      }
+    }
+    return false
+  })
+
+  const projectsIndex = processedBlocks.findIndex((item) => {
+    if (item.type === 'block' && item.block) {
+      const block = item.block
+      if (block.type === 'heading_2' || block.type === 'heading_3') {
+        const text = block[block.type]?.rich_text?.map((t: any) => t.plain_text).join('') || ''
+        return text.includes('项目经历') || text.includes('项目')
+      }
+    }
+    return false
+  })
+
+  // 如果找到了两个部分，将它们组织成两列布局
+  if (exhibitionsIndex !== -1 && projectsIndex !== -1 && exhibitionsIndex < projectsIndex) {
+    const beforeExhibitions = processedBlocks.slice(0, exhibitionsIndex)
+    // 参展经历部分：从参展经历标题到项目经历标题之前的所有内容
+    const exhibitionsSection = processedBlocks.slice(exhibitionsIndex, projectsIndex)
+    // 项目经历部分：从项目经历标题开始，找到下一个标题或结束
+    let projectsEndIndex = processedBlocks.length // 默认到结尾
+    for (let i = projectsIndex + 1; i < processedBlocks.length; i++) {
+      const item = processedBlocks[i]
+      if (item.type === 'block' && item.block) {
+        const block = item.block
+        if (block.type === 'heading_1' || block.type === 'heading_2' || block.type === 'heading_3') {
+          const text = block[block.type]?.rich_text?.map((t: any) => t.plain_text).join('') || ''
+          // 如果遇到新的标题（不是项目经历），停止收集
+          if (!text.includes('项目经历') && !text.includes('项目')) {
+            projectsEndIndex = i
+            break
+          }
+        }
+      }
+    }
+    const projectsSection = processedBlocks.slice(projectsIndex, projectsEndIndex)
+    const afterProjects = processedBlocks.slice(projectsEndIndex)
+
+    return (
+      <div className={styles.container}>
+        {beforeExhibitions.map((item, index) => {
+          if (item.type === 'list') {
+            const isNumbered = item.blocks[0]?.type === 'numbered_list_item'
+            const ListTag = isNumbered ? 'ol' : 'ul'
+            return (
+              <ListTag key={`list-${index}`} className={styles.list}>
+                {item.blocks.map(renderBlock)}
+              </ListTag>
+            )
+          }
+          if (item.type === 'table') {
+            return (
+              <div key={`table-${index}`} className={styles.tableWrapper}>
+                <table className={styles.table}>
+                  <tbody>
+                    {item.rows.map(renderBlock)}
+                  </tbody>
+                </table>
+              </div>
+            )
+          }
+          return renderBlock(item.block)
+        })}
+        
+        {/* 两列布局：参展经历和项目经历 */}
+        <div className={styles.twoColumnLayout}>
+          <div className={styles.column}>
+            {exhibitionsSection.map((item, index) => {
+              if (item.type === 'list') {
+                const isNumbered = item.blocks[0]?.type === 'numbered_list_item'
+                const ListTag = isNumbered ? 'ol' : 'ul'
+                return (
+                  <ListTag key={`exhibitions-list-${index}`} className={styles.list}>
+                    {item.blocks.map(renderBlock)}
+                  </ListTag>
+                )
+              }
+              if (item.type === 'table') {
+                return (
+                  <div key={`exhibitions-table-${index}`} className={styles.tableWrapper}>
+                    <table className={styles.table}>
+                      <tbody>
+                        {item.rows.map(renderBlock)}
+                      </tbody>
+                    </table>
+                  </div>
+                )
+              }
+              return renderBlock(item.block)
+            })}
+          </div>
+          <div className={styles.column}>
+            {projectsSection.map((item, index) => {
+              if (item.type === 'list') {
+                const isNumbered = item.blocks[0]?.type === 'numbered_list_item'
+                const ListTag = isNumbered ? 'ol' : 'ul'
+                return (
+                  <ListTag key={`projects-list-${index}`} className={`${styles.list} ${styles.projectsList}`}>
+                    {item.blocks.map(renderBlock)}
+                  </ListTag>
+                )
+              }
+              if (item.type === 'table') {
+                return (
+                  <div key={`projects-table-${index}`} className={styles.tableWrapper}>
+                    <table className={styles.table}>
+                      <tbody>
+                        {item.rows.map(renderBlock)}
+                      </tbody>
+                    </table>
+                  </div>
+                )
+              }
+              return renderBlock(item.block)
+            })}
+          </div>
+        </div>
+
+        {afterProjects.map((item, index) => {
+          if (item.type === 'list') {
+            const isNumbered = item.blocks[0]?.type === 'numbered_list_item'
+            const ListTag = isNumbered ? 'ol' : 'ul'
+            return (
+              <ListTag key={`list-${index}`} className={styles.list}>
+                {item.blocks.map(renderBlock)}
+              </ListTag>
+            )
+          }
+          if (item.type === 'table') {
+            return (
+              <div key={`table-${index}`} className={styles.tableWrapper}>
+                <table className={styles.table}>
+                  <tbody>
+                    {item.rows.map(renderBlock)}
+                  </tbody>
+                </table>
+              </div>
+            )
+          }
+          return renderBlock(item.block)
+        })}
+      </div>
+    )
+  }
+
+  // 如果没有找到两个部分，使用原来的渲染方式
   return (
     <div className={styles.container}>
       {processedBlocks.map((item, index) => {

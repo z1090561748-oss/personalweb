@@ -1,6 +1,6 @@
 .container {
   min-height: 100vh;
-  background: var(--bg-primary);
+  background: transparent;
   padding: 0;
   position: relative;
   z-index: 1;
@@ -11,77 +11,10 @@
   max-width: 100%;
 }
 
-/* 顶部 Hero 区域，参考 kejynwu.com 的布局节奏 */
-.hero {
-  max-width: 1200px;
-  margin: 0 auto 80px;
-  text-align: left;
-}
-
-.heroKicker {
-  font-size: 0.9rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-  margin-bottom: 16px;
-}
-
-.heroRole {
-  font-size: 1rem;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  color: var(--accent);
-  margin-bottom: 10px;
-}
-
-.heroName {
-  font-size: clamp(3rem, 7vw, 5rem);
-  font-weight: 400;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--text-primary);
-}
-
-.introSection,
-.aboutSection {
-  max-width: 1200px;
-  margin: 0 auto 60px;
-}
-
-.sectionHeader {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 20px;
-}
-
-.sectionTitle {
-  font-size: 0.95rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-}
-
-.sectionSubtitle {
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-}
-
-.aboutContent {
-  border-top: 1px solid var(--border);
-  padding-top: 20px;
-}
-
-.projectsSection {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.introError {
+.introSection {
   max-width: 1200px;
   margin: 0 auto 40px;
-  color: var(--text-secondary);
-  font-size: 0.9rem;
+  padding: 20px 40px 10px;
 }
 
 .mainTitle {
@@ -111,7 +44,7 @@
 }
 
 .workTitle {
-  font-size: clamp(4rem, 10vw, 12rem);
+  font-size: clamp(1rem, 2.5vw, 3rem);
   font-weight: 200;
   color: var(--text-primary);
   margin: 0;
@@ -119,24 +52,33 @@
   line-height: 1;
   text-transform: uppercase;
   text-align: left;
-  display: inline-block;
+  display: inline-block;  transition: transform 0.3s ease;
+  transition: transform 0.3s ease;
 }
 
-.workTitle .char {
-  display: inline-block;
+.workItem:hover .workTitle {
+  transform: scale(1.2);
+}
+
+.workItem:hover .workTitle {  transform: scale(1.2);}.workTitle .char {
+  display: inline-block;  transition: transform 0.3s ease;
   transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   transform-origin: center;
   transform: translate(var(--random-x, -60px), var(--random-y, -100px)) rotate(var(--random-rotation, 30deg));
   opacity: 0.2;
 }
 
-.workItem:hover .workTitle .char {
+.workItem:hover .workItem:hover .workTitle {
+  transform: scale(1.2);
+}
+
+.workItem:hover .workTitle {  transform: scale(1.2);}.workTitle .char {
   transform: translate(0, 0) rotate(0deg) scale(1.15);
   opacity: 1;
 }
 
 .char {
-  display: inline-block;
+  display: inline-block;  transition: transform 0.3s ease;
 }
 
 .loading {
@@ -151,33 +93,41 @@
 }
 
 .spinner {
-  width: 60px;
-  height: 60px;
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   margin-bottom: 30px;
-  position: relative;
 }
 
-.spinner::after {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  border: 2px solid transparent;
-  border-top-color: var(--accent-secondary);
+.spinner span {
+  width: 8px;
+  height: 8px;
+  background-color: white;
   border-radius: 50%;
-  animation: spin 1.5s linear infinite reverse;
-  opacity: 0.5;
+  animation: dot-bounce 1.4s ease-in-out infinite;
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+.spinner span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.spinner span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.spinner span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes dot-bounce {
+  0%, 80%, 100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
   }
 }
 
@@ -246,6 +196,6 @@
   }
 
   .workTitle {
-    font-size: clamp(3rem, 8vw, 10rem);
+    font-size: clamp(0.75rem, 2vw, 2.5rem);
   }
 }

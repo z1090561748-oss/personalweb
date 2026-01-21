@@ -3,6 +3,9 @@ import { Client } from '@notionhq/client'
 import { readFileSync } from 'fs'
 import { join } from 'path'
 
+// 添加缓存配置：缓存 5 分钟
+export const revalidate = 300
+
 // 读取配置
 function getConfig() {
   try {
@@ -62,11 +65,11 @@ export async function GET(request: NextRequest) {
 
     const cleanDatabaseId = databaseId.replace(/-/g, '')
 
-    // 重试函数，处理网络连接问题
+    // 重试函数，处理网络连接问题（优化：减少重试次数和延迟）
     const retry = async <T>(
       fn: () => Promise<T>,
-      maxRetries: number = 3,
-      delay: number = 1000
+      maxRetries: number = 2,
+      delay: number = 500
     ): Promise<T> => {
       for (let i = 0; i < maxRetries; i++) {
         try {
@@ -157,101 +160,105 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // 处理结果，提取作品信息
-    const works = response.results.map((page: any) => {
-      try {
-        const properties = page.properties || {}
+    // 处理结果，提取作品信息（需要异步获取封面，因此使用 Promise.all）
+    const workResults = await Promise.all(
+      response.results.map(async (page: any) => {
+        try {
+          const properties = page.properties || {}
 
-      // 获取作品名称（Title 属性）
-      const nameProperty = properties.Name || properties['作品名称'] || properties['Name']
-      const name = nameProperty?.type === 'title' 
-        ? nameProperty.title.map((t: any) => t.plain_text).join('')
-        : '未命名作品'
+        // 获取作品名称（Title 属性）
+        const nameProperty = properties.Name || properties['作品名称'] || properties['Name']
+        const name =
+          nameProperty?.type === 'title'
+            ? nameProperty.title.map((t: any) => t.plain_text).join('')
+            : '未命名作品'
 
-      // 获取页面 ID
-      // 优先从 URL 属性中提取，也支持 Page ID 属性
-      const urlProperty = properties['URL'] || properties['url'] || properties['Url']
-      const pageIdProperty = properties['Page ID'] || 
-                             properties['页面ID'] || 
-                             properties['page_id'] ||
-                             properties['PageID'] ||
-                             properties['PageId']
-      
-      let pageId = null
-      
-      // 优先处理 URL 属性
-      if (urlProperty && urlProperty.type === 'url' && urlProperty.url) {
-        // 从 URL 中提取页面 ID
-        // 支持格式：https://www.notion.so/Page-2d974318f7ec8063ab63ecd5a7ecddbe
-        // 或：notion.so/Page-2d974318f7ec8063ab63ecd5a7ecddbe
-        const urlMatch = urlProperty.url.match(/-([a-f0-9]{32})(?:\?|$)/i)
-        if (urlMatch) {
-          pageId = urlMatch[1]
+        // 获取页面 ID
+        // 优先从 URL 属性中提取，也支持 Page ID 属性
+        const urlProperty = properties['URL'] || properties['url'] || properties['Url']
+        const pageIdProperty =
+          properties['Page ID'] ||
+          properties['页面ID'] ||
+          properties['page_id'] ||
+          properties['PageID'] ||
+          properties['PageId']
+
+        let pageId = null
+
+        // 优先处理 URL 属性
+        if (urlProperty && urlProperty.type === 'url' && urlProperty.url) {
+          // 从 URL 中提取页面 ID
+          const urlMatch = urlProperty.url.match(/-([a-f0-9]{32})(?:\?|$)/i)
+          if (urlMatch) {
+            pageId = urlMatch[1]
+          }
         }
-      }
-      
-      // 如果没有从 URL 获取到，尝试从 Page ID 属性获取
-      if (!pageId && pageIdProperty) {
-        if (pageIdProperty.type === 'rich_text' && pageIdProperty.rich_text) {
-          pageId = pageIdProperty.rich_text
-            .map((t: any) => t.plain_text)
-            .join('')
-            .replace(/-/g, '')
-        } else if (pageIdProperty.type === 'title' && pageIdProperty.title) {
-          pageId = pageIdProperty.title
-            .map((t: any) => t.plain_text)
-            .join('')
-            .replace(/-/g, '')
+
+        // 如果没有从 URL 获取到，尝试从 Page ID 属性获取
+        if (!pageId && pageIdProperty) {
+          if (pageIdProperty.type === 'rich_text' && pageIdProperty.rich_text) {
+            pageId = pageIdProperty.rich_text
+              .map((t: any) => t.plain_text)
+              .join('')
+              .replace(/-/g, '')
+          } else if (pageIdProperty.type === 'title' && pageIdProperty.title) {
+            pageId = pageIdProperty.title
+              .map((t: any) => t.plain_text)
+              .join('')
+              .replace(/-/g, '')
+          }
         }
-      }
-      
-      // 如果还是没有找到，使用记录本身的 ID
-      if (!pageId && page.id) {
-        pageId = page.id.replace(/-/g, '')
-      }
 
-      // 获取封面图片（Files 属性）
-      // 支持多种属性名：image, Image, Cover, 封面等
-      const coverProperty = properties.image || 
-                            properties.Image || 
-                            properties.Cover || 
-                            properties['封面'] || 
-                            properties.cover || 
-                            properties['Cover Image']
-      let coverImage = null
-      if (coverProperty?.type === 'files' && coverProperty.files?.length > 0) {
-        const file = coverProperty.files[0]
-        coverImage = file.type === 'external' 
-          ? file.external.url 
-          : file.file?.url
-      }
+        // 如果还是没有找到，使用记录本身的 ID
+        if (!pageId && page.id) {
+          pageId = page.id.replace(/-/g, '')
+        }
 
-      // 如果没有封面，尝试使用页面的封面
-      if (!coverImage && page.cover) {
-        coverImage = page.cover.type === 'external'
-          ? page.cover.external.url
-          : page.cover.file?.url
-      }
+        // 获取封面图片（Files 属性）
+        // 支持多种属性名：image, Image, Cover, 封面等
+        const coverProperty =
+          properties.image ||
+          properties.Image ||
+          properties.Cover ||
+          properties['封面'] ||
+          properties.cover ||
+          properties['Cover Image']
+        let coverImage = null
+        if (coverProperty?.type === 'files' && coverProperty.files?.length > 0) {
+          const file = coverProperty.files[0]
+          coverImage = file.type === 'external' ? file.external.url : file.file?.url
+        }
 
-      // 获取描述（Text 属性）
-      const descProperty = properties.Description || properties['描述'] || properties['description']
-      const description = descProperty?.type === 'rich_text' || descProperty?.type === 'text'
-        ? (descProperty.rich_text || descProperty.text || [])
-            .map((t: any) => t.plain_text)
-            .join('')
-        : ''
+        // 如果没有封面，尝试使用页面的封面
+        if (!coverImage && page.cover) {
+          coverImage =
+            page.cover.type === 'external' ? page.cover.external.url : page.cover.file?.url
+        }
 
-      // 获取分类（Select 属性）
-      const categoryProperty = properties.Category || properties['分类'] || properties['category']
-      const category = categoryProperty?.type === 'select'
-        ? categoryProperty.select?.name
-        : null
+        // 优化：移除从页面内容获取封面的逻辑，减少 API 调用
+        // 如果需要在首页显示封面，请在 Notion 数据库的属性中设置封面图片
+        // 或者在前端处理占位符
 
-      // 获取日期（Date 属性）
-      const dateProperty = properties.Date || properties['日期'] || properties['date']
-      const date = dateProperty?.type === 'date'
-        ? dateProperty.date?.start
-        : null
+        // 获取描述（Text 属性）
+        const descProperty =
+          properties.Description || properties['描述'] || properties['description']
+        const description =
+          descProperty?.type === 'rich_text' || descProperty?.type === 'text'
+            ? (descProperty.rich_text || descProperty.text || [])
+                .map((t: any) => t.plain_text)
+                .join('')
+            : ''
+
+        // 获取分类（Select 属性）
+        const categoryProperty =
+          properties.Category || properties['分类'] || properties['category']
+        const category =
+          categoryProperty?.type === 'select' ? categoryProperty.select?.name : null
+
+        // 获取日期（Date 属性）
+        const dateProperty = properties.Date || properties['日期'] || properties['date']
+        const date =
+          dateProperty?.type === 'date' ? dateProperty.date?.start : null
 
         return {
           id: page.id,
@@ -270,7 +277,10 @@ export async function GET(request: NextRequest) {
         // 返回 null，后续会被过滤掉
         return null
       }
-    }).filter((work: any) => work !== null) // 过滤掉处理失败的项目
+    })
+    )
+
+    const works = workResults.filter((work: any) => work !== null) // 过滤掉处理失败的项目
     
     // 调试信息：输出所有记录的属性
     if (response.results.length > 0 && works.length === 0) {
@@ -294,6 +304,11 @@ export async function GET(request: NextRequest) {
         id: database.id,
       },
       works: filteredWorks,
+    }, {
+      // 添加缓存头
+      headers: {
+        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+      },
     })
   } catch (error: any) {
     console.error('获取作品集错误:', error)

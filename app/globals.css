@@ -8,7 +8,7 @@
   --bg-primary: #000000;
   --bg-secondary: #0a0a0a;
   --text-primary: #ffffff;
-  --text-secondary: #a0a0a0;
+  --text-secondary: #ffffff;
   --accent: #00ff88;
   --accent-secondary: #ff0080;
   --border: rgba(255, 255, 255, 0.1);
@@ -27,7 +27,7 @@ body {
   position: relative;
 }
 
-/* 背景动画效果 */
+/* 背景粒子效果 - 黑白渐变 */
 body::before {
   content: '';
   position: fixed;
@@ -36,22 +36,83 @@ body::before {
   width: 100%;
   height: 100%;
   background: 
-    radial-gradient(circle at 20% 50%, rgba(0, 255, 136, 0.05) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(255, 0, 128, 0.05) 0%, transparent 50%),
-    radial-gradient(circle at 40% 20%, rgba(0, 255, 255, 0.03) 0%, transparent 50%);
+    /* 大粒子 - 白色模糊光晕（减小尺寸） */
+    radial-gradient(ellipse at 15% 30%, rgba(255, 255, 255, 0.08) 0%, transparent 30%),
+    radial-gradient(ellipse at 85% 70%, rgba(255, 255, 255, 0.07) 0%, transparent 32%),
+    radial-gradient(ellipse at 50% 20%, rgba(255, 255, 255, 0.06) 0%, transparent 35%),
+    radial-gradient(ellipse at 30% 80%, rgba(255, 255, 255, 0.08) 0%, transparent 28%),
+    radial-gradient(ellipse at 70% 50%, rgba(255, 255, 255, 0.07) 0%, transparent 38%),
+    radial-gradient(ellipse at 20% 60%, rgba(255, 255, 255, 0.08) 0%, transparent 30%),
+    radial-gradient(ellipse at 90% 30%, rgba(255, 255, 255, 0.06) 0%, transparent 32%),
+    radial-gradient(ellipse at 60% 85%, rgba(255, 255, 255, 0.05) 0%, transparent 35%),
+    radial-gradient(ellipse at 40% 15%, rgba(255, 255, 255, 0.07) 0%, transparent 30%),
+    radial-gradient(ellipse at 75% 90%, rgba(255, 255, 255, 0.07) 0%, transparent 32%);
   pointer-events: none;
   z-index: 0;
-  animation: backgroundShift 20s ease-in-out infinite;
+  animation: particleMove 12s ease-in-out infinite;
+  filter: blur(80px);
 }
 
-@keyframes backgroundShift {
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    /* 小点粒子 - 白色亮点（减小尺寸） */
+    radial-gradient(circle at 10% 25%, rgba(255, 255, 255, 0.7) 0%, transparent 1.2%),
+    radial-gradient(circle at 45% 15%, rgba(255, 255, 255, 0.65) 0%, transparent 1%),
+    radial-gradient(circle at 80% 40%, rgba(255, 255, 255, 0.75) 0%, transparent 1.5%),
+    radial-gradient(circle at 25% 70%, rgba(255, 255, 255, 0.68) 0%, transparent 1.1%),
+    radial-gradient(circle at 65% 80%, rgba(255, 255, 255, 0.7) 0%, transparent 1.2%),
+    radial-gradient(circle at 35% 50%, rgba(255, 255, 255, 0.65) 0%, transparent 1%),
+    radial-gradient(circle at 90% 60%, rgba(255, 255, 255, 0.72) 0%, transparent 1.4%),
+    radial-gradient(circle at 15% 85%, rgba(255, 255, 255, 0.68) 0%, transparent 1.1%),
+    radial-gradient(circle at 55% 30%, rgba(255, 255, 255, 0.7) 0%, transparent 1.2%),
+    radial-gradient(circle at 75% 10%, rgba(255, 255, 255, 0.65) 0%, transparent 1%),
+    radial-gradient(circle at 20% 45%, rgba(255, 255, 255, 0.68) 0%, transparent 1.1%),
+    radial-gradient(circle at 50% 75%, rgba(255, 255, 255, 0.7) 0%, transparent 1.2%),
+    radial-gradient(circle at 85% 90%, rgba(255, 255, 255, 0.65) 0%, transparent 1%),
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.7) 0%, transparent 1.2%),
+    radial-gradient(circle at 70% 55%, rgba(255, 255, 255, 0.68) 0%, transparent 1.1%);
+  pointer-events: none;
+  z-index: 0;
+  animation: particleFloat 15s ease-in-out infinite;
+}
+
+@keyframes particleMove {
   0%, 100% {
     opacity: 1;
-    transform: scale(1);
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    opacity: 0.9;
+    transform: translate(20px, -30px) scale(1.05);
   }
   50% {
+    opacity: 0.85;
+    transform: translate(-15px, 20px) scale(0.95);
+  }
+  75% {
+    opacity: 0.9;
+    transform: translate(30px, 15px) scale(1.02);
+  }
+}
+
+@keyframes particleFloat {
+  0%, 100% {
+    opacity: 0.6;
+    transform: translate(0, 0);
+  }
+  33% {
     opacity: 0.8;
-    transform: scale(1.1);
+    transform: translate(15px, -20px);
+  }
+  66% {
+    opacity: 0.7;
+    transform: translate(-20px, 25px);
   }
 }
 
