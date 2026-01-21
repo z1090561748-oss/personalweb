@@ -4,6 +4,12 @@
   box-sizing: border-box;
 }
 
+html {
+  font-size: 16px; /* 确保基础字体大小一致 */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 :root {
   --bg-primary: #000000;
   --bg-secondary: #0a0a0a;
@@ -25,6 +31,10 @@ body {
   color: var(--text-primary);
   overflow-x: hidden;
   position: relative;
+  width: 100%;
+  max-width: 100vw;
+  margin: 0;
+  padding: 0;
 }
 
 /* 背景粒子效果 - 黑白渐变 */
@@ -182,6 +192,11 @@ a:hover::after {
 /* 平滑滚动 */
 html {
   scroll-behavior: smooth;
+  font-size: 16px; /* 确保基础字体大小一致 */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 /* 响应式字体 */
