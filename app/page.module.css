@@ -115,7 +115,7 @@
 }
 
 .workTitle {
-  font-size: clamp(4rem, 10vw, 12rem);
+  font-size: clamp(2rem, 5vw, 6rem);
   font-weight: 200;
   color: var(--text-primary);
   margin: 0;
@@ -250,6 +250,6 @@
   }
 
   .workTitle {
-    font-size: clamp(3rem, 8vw, 10rem);
+    font-size: clamp(1.5rem, 4vw, 5rem);
   }
 }
